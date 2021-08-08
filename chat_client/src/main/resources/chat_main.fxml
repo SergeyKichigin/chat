@@ -11,8 +11,15 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="ru.geekbrains.chat.chat_app.MainChatController"
             prefHeight="400.0" prefWidth="600.0">
+    <VBox visible="true" fx:id="loginPanel">
 
-    <VBox fx:id="mainChatPanel" >
+        <HBox VBox.vgrow="ALWAYS">
+            <TextField text="login..." fx:id="loginField"/>
+            <PasswordField text="..." fx:id="passwordField"/>
+        </HBox>
+        <Button text="SEND" onAction="#sendAuth"/>
+    </VBox>
+    <VBox fx:id="mainChatPanel" visible="false">
         <MenuBar>
             <Menu text="File">
                 <MenuItem text="Item1" onAction="#mockAction"/>
