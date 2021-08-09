@@ -1,5 +1,6 @@
 package ru.geekbrains.chat.chat_server.auth;
 
+import ru.geekbrains.chat.chat_server.error.BadRequestException;
 import ru.geekbrains.chat.chat_server.error.UserNotFoundException;
 import ru.geekbrains.chat.chat_server.error.WrongCredentialsException;
 
@@ -44,21 +45,45 @@ public class InMemoryAuthService implements AuthService{
 
     @Override
     public String changeNickname(String oldNick, String newNick) {
-        return null;
+        for (User user : users) {
+            if (user.getNickname().equals(newNick)) {
+                throw new BadRequestException("This nick busy");
+            }
+        }
+        for (User user : users) {
+            if (user.getNickname().equals(oldNick)) {
+                user.setNickname(newNick);
+                return newNick;
+            }
+        }
+        throw new UserNotFoundException("User not found");
     }
 
     @Override
     public void changePassword(String nickname, String oldPassword, String newPassword) {
-
+        for (User user : users) {
+            if (user.getNickname().equals(nickname)) {
+                if (user.getPassword().equals(oldPassword)) {
+                    user.setPassword(newPassword);
+                    return;
+                } else throw new BadRequestException("Wrong password");
+            }
+        }
+        throw new UserNotFoundException("User not found");
     }
 
     @Override
     public void createNewUser(String login, String password, String nickname) {
-
+        for (User user : users) {
+            if (user.getNickname().equals(nickname) || user.getLogin().equals(login)) {
+                throw new BadRequestException("This nick or login busy");
+            }
+        }
+        this.users.add(new User(login, password, nickname));
     }
 
     @Override
     public void deleteUser(String nickname) {
-
+        users.removeIf(user -> user.getNickname().equals(nickname));
     }
 }

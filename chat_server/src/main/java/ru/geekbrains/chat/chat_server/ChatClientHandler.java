@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ChatClientHandler {
+    public static final String REGEX = "%&%";
     private Socket socket;
     private DataOutputStream out;
     private DataInputStream in;
@@ -34,8 +35,7 @@ public class ChatClientHandler {
             try {
                 while (!Thread.currentThread().isInterrupted() && socket.isConnected()) {
                     String message = in.readUTF();
-                    System.out.printf("Client #%s: %s\n", this.currentUser, message);
-                    server.broadcastMessage(message);
+                    handleMessage(message);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -50,23 +50,61 @@ public class ChatClientHandler {
         while (true) {
             try {
                 String message = in.readUTF();
-                if (message.startsWith("auth:")) {
-                    String[] credentials = message.substring(6).split("\\s");
-                    try {
-                        this.currentUser = server.getAuthService().getNicknameByLoginAndPassword(credentials[0], credentials[1]);
-                        this.server.addAuthorizedClientToList(this);
-                        sendMessage("authok: " + this.currentUser);
-                        break;
-                    } catch (WrongCredentialsException e) {
-                        sendMessage("ERROR: Wrong credentials");
-                    } catch (UserNotFoundException e) {
-                        sendMessage("ERROR: User not found!");
-                    }
+                if (message.startsWith("/auth") || message.startsWith("/register")) {
+                    if (handleMessage(message)) break;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private boolean handleMessage(String message) {
+        try {
+            String[] parsed = message.split(REGEX);
+            switch (parsed[0]) {
+                case "/w":
+                    server.sendPrivateMessage(this.currentUser, parsed[1], parsed[2], this);
+                    break;
+                case "/ALL":
+                    server.broadcastMessage(this.currentUser, parsed[1]);
+                    break;
+                case "/change_nick":
+                    String nick = server.getAuthService().changeNickname(this.currentUser, parsed[1]);
+                    server.removeAuthorizedClientFromList(this);
+                    this.currentUser = nick;
+                    server.addAuthorizedClientToList(this);
+                    sendMessage("/change_nick_ok");
+                    break;
+                case "/change_pass":
+                    server.getAuthService().changePassword(this.currentUser, parsed[1], parsed[2]);
+                    sendMessage("/change_pass_ok");
+                    break;
+                case "/remove":
+                    server.getAuthService().deleteUser(this.currentUser);
+                    this.socket.close();
+                    break;
+                case "/register":
+                    server.getAuthService().createNewUser(parsed[1], parsed[2], parsed[3]);
+                    sendMessage("register_ok:");
+                    break;
+                case "/auth":
+                    this.currentUser = server.getAuthService().getNicknameByLoginAndPassword(parsed[1], parsed[2]);
+                    if (server.isNicknameBusy(currentUser)) {
+                        sendMessage("ERROR:" + REGEX + "U're clone!");
+                    } else {
+                        this.server.addAuthorizedClientToList(this);
+                        sendMessage("authok:" + REGEX + this.currentUser);
+                        return true;
+                    }
+                    break;
+                default:
+                    sendMessage("ERROR:" + REGEX + "command not found!");
+            }
+        } catch (Exception e) {
+            sendMessage("ERROR:" + REGEX + e.getMessage());
+        }
+        return false;
     }
 
     public Thread getHandlerThread() {
