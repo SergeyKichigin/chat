@@ -23,6 +23,10 @@ public class MainChatController implements Initializable, MessageProcessor {
     public PasswordField newPasswordField;
     public VBox changeNickPanel;
     public TextField newNickField;
+    public VBox registrationPanel;
+    public TextField newLoginField;
+    public PasswordField newPassField;
+    public TextField newNicknameField;
     private ChatMessageService chatMessageService;
     private String nickName;
     public VBox mainChatPanel;
@@ -63,8 +67,11 @@ public class MainChatController implements Initializable, MessageProcessor {
         chatMessageService.send("/auth" + REGEX + loginField.getText() + REGEX + passwordField.getText());
     }
 
-    public void sendRegister(ActionEvent actionEvent) {
-    }
+//    public void sendRegistr(ActionEvent actionEvent) {
+//        if (newLoginField.getText().isEmpty() || newPassField.getText().isEmpty() || newNicknameField.getText().isEmpty()) return;
+//        chatMessageService.connect();
+//        chatMessageService.send("/register" + REGEX + newLoginField.getText() + REGEX + newPassField.getText() + REGEX + newNicknameField.getText());
+//    }
 
     public void sendChangeNick(ActionEvent actionEvent) {
         if (newNickField.getText().isEmpty()) return;
@@ -98,6 +105,11 @@ public class MainChatController implements Initializable, MessageProcessor {
                 contactList.setItems(list);
                 contactList.getSelectionModel().select(0);
                 break;
+//            case "register_ok:":
+//                showRegistr();
+//                registrationPanel.setVisible(false);
+//                loginPanel.setVisible(true);
+//                break;
             case "/change_nick_ok" :
                 changeNickPanel.setVisible(false);
                 mainChatPanel.setVisible(true);
@@ -116,10 +128,16 @@ public class MainChatController implements Initializable, MessageProcessor {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("ERROR");
         alert.setHeaderText(message);
-
         alert.showAndWait();
-
     }
+
+//    private void showRegistr() {
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle("INFORMATION");
+//        alert.setHeaderText("Registration completed successfully!");
+//        alert.showAndWait();
+//    }
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -144,6 +162,16 @@ public class MainChatController implements Initializable, MessageProcessor {
         mainChatPanel.setVisible(false);
         changePasswordPanel.setVisible(true);
     }
+
+//    public void sendRegistration(ActionEvent actionEvent) {
+//        loginPanel.setVisible(false);
+//        registrationPanel.setVisible(true);
+//    }
+//
+//    public void returnToLoginPanel(ActionEvent actionEvent) {
+//        registrationPanel.setVisible(false);
+//        loginPanel.setVisible(true);
+//    }
 }
 
 

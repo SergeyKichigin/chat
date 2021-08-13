@@ -40,6 +40,26 @@
         <Button text="RETURN" onAction="#returnToChat"/>
     </VBox>
 
+<!--    <VBox visible="false" fx:id="registrationPanel">-->
+
+<!--        <HBox VBox.vgrow="ALWAYS">-->
+<!--            <VBox>-->
+<!--                <Label text="Сreate your login:"/>-->
+<!--                <TextField fx:id="newLoginField" onAction="#sendRegistr"/>-->
+<!--            </VBox>-->
+<!--            <VBox>-->
+<!--                <Label text="Create your password:"/>-->
+<!--                <PasswordField fx:id="newPassField" onAction="#sendRegistr"/>-->
+<!--            </VBox>-->
+<!--            <VBox>-->
+<!--                <Label text="Create your nickname:"/>-->
+<!--                <TextField fx:id="newNicknameField" onAction="#sendRegistr"/>-->
+<!--            </VBox>-->
+<!--        </HBox>-->
+<!--        <Button text="SEND" onAction="#sendRegistr"/>-->
+<!--        <Button text="RETURN" onAction="#returnToLoginPanel"/>-->
+<!--    </VBox>-->
+
     <VBox visible="true" fx:id="loginPanel">
 
         <HBox VBox.vgrow="ALWAYS">
@@ -53,6 +73,7 @@
             </VBox>
         </HBox>
         <Button text="SEND" onAction="#sendAuth"/>
+<!--        <Button text="REGISTRATION" onAction="#sendRegistration"/>-->
     </VBox>
     <VBox fx:id="mainChatPanel" visible="false">
         <MenuBar>
