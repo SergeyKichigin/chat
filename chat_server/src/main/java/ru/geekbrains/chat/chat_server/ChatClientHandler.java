@@ -16,12 +16,14 @@ public class ChatClientHandler {
     private Thread handlerThread;
     private ChatServer server;
     private String currentUser;
+    private int t = 120;
 
     public ChatClientHandler(Socket socket, ChatServer server) {
         try {
             this.socket = socket;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
+            socket.setSoTimeout(t * 1000);
             System.out.println("Handler created");
             this.server = server;
         } catch (IOException e) {
@@ -33,6 +35,7 @@ public class ChatClientHandler {
         handlerThread = new Thread(() -> {
             authorize();
             try {
+                socket.setSoTimeout(0);
                 while (!Thread.currentThread().isInterrupted() && socket.isConnected()) {
                     String message = in.readUTF();
                     handleMessage(message);
