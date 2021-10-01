@@ -1,6 +1,7 @@
 package ru.geekbrains.chat.chat_server;
 
 import ru.geekbrains.chat.chat_server.auth.AuthService;
+import ru.geekbrains.chat.chat_server.auth.DatabaseAuthService;
 import ru.geekbrains.chat.chat_server.auth.InMemoryAuthService;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class ChatServer {
     private Map<String, ChatClientHandler> handlers;
 
     public ChatServer() {
-        this.authService = new InMemoryAuthService();
+        this.authService = new DatabaseAuthService();
         this.handlers = new HashMap<>();
     }
 
@@ -33,8 +34,11 @@ public class ChatServer {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            authService.stop();
         }
     }
+
 
     public void broadcastMessage(String from, String message) {
         message = String.format("[%s]: %s", from, message);
