@@ -7,6 +7,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ChatClientHandler {
     public static final String REGEX = "%&%";
@@ -32,7 +34,8 @@ public class ChatClientHandler {
     }
 
     public void handle() {
-        handlerThread = new Thread(() -> {
+        ExecutorService service = Executors.newCachedThreadPool();
+        service.execute(() -> {
             authorize();
             try {
                 socket.setSoTimeout(0);
@@ -46,7 +49,6 @@ public class ChatClientHandler {
                 server.removeAuthorizedClientFromList(this);
             }
         });
-        handlerThread.start();
     }
 
     private void authorize() {

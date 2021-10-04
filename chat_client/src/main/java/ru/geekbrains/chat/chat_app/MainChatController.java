@@ -8,9 +8,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import ru.geekbrains.chat.chat_app.net.ChatMessageService;
+import ru.geekbrains.chat.chat_app.net.HistoryMaker;
 import ru.geekbrains.chat.chat_app.net.MessageProcessor;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainChatController implements Initializable, MessageProcessor {
@@ -34,6 +36,7 @@ public class MainChatController implements Initializable, MessageProcessor {
     public ListView<String> contactList;
     public TextField inputField;
     public Button btnSendMessage;
+    private HistoryMaker historyMaker;
 
 
     public void mockAction(ActionEvent actionEvent) {
@@ -52,6 +55,7 @@ public class MainChatController implements Initializable, MessageProcessor {
         if (recipient.equals("ALL")) message = "/" + recipient + REGEX + text;
         else message = "/w" + REGEX + recipient + REGEX + text;
         chatMessageService.send(message);
+        historyMaker.writeHistory(String.format("[ME] %s\n", text));
         inputField.clear();
     }
 
@@ -95,6 +99,11 @@ public class MainChatController implements Initializable, MessageProcessor {
                 this.nickName = parsedMessage[1];
                 loginPanel.setVisible(false);
                 mainChatPanel.setVisible(true);
+                this.historyMaker = new HistoryMaker(nickName);
+                List<String> history = historyMaker.readHistory();
+                for (String s : history) {
+                    mainChatArea.appendText(s + System.lineSeparator());
+                }
                 break;
             case "ERROR:":
                 showError(parsedMessage[1]);
@@ -120,6 +129,7 @@ public class MainChatController implements Initializable, MessageProcessor {
                 break;
             default:
                 mainChatArea.appendText(parsedMessage[0] + System.lineSeparator());
+                historyMaker.writeHistory(parsedMessage[0] + System.lineSeparator());
         }
 
     }
