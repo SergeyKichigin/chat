@@ -92,13 +92,19 @@ public class ChatClientHandler {
                     sendMessage("register_ok:");
                     break;
                 case "/auth":
-                    this.currentUser = server.getAuthService().getNicknameByLoginAndPassword(parsed[1], parsed[2]);
-                    if (server.isNicknameBusy(currentUser)) {
-                        sendMessage("ERROR:" + REGEX + "U're clone!");
-                    } else {
-                        this.server.addAuthorizedClientToList(this);
-                        sendMessage("authok:" + REGEX + this.currentUser);
-                        return true;
+                    try {
+                        String username = server.getAuthService().getNicknameByLoginAndPassword(parsed[1], parsed[2]);
+                        if (server.isNicknameBusy(username)) {
+                            sendMessage("ERROR:" + REGEX + "U're clone!");
+                        } else {
+                            this.currentUser = username;
+                            this.server.addAuthorizedClientToList(this);
+                            sendMessage("authok:" + REGEX + this.currentUser);
+                            return true;
+                        }
+                    } catch (UserNotFoundException e) {
+                        System.out.println("Auth error");
+                        sendMessage("ERROR:" + REGEX + "Wrong username or pass");
                     }
                     break;
                 default:
