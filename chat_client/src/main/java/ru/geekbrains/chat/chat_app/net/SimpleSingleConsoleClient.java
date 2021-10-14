@@ -2,6 +2,8 @@ package ru.geekbrains.chat.chat_app.net;
 
 import java.io.*;
 import java.net.Socket;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SimpleSingleConsoleClient {
     private static final String HOST = "127.0.0.1";
@@ -9,6 +11,7 @@ public class SimpleSingleConsoleClient {
     private DataOutputStream out;
     private DataInputStream in;
     private Thread clientConsoleThread;
+    private static final Logger log = LogManager.getLogger(SimpleSingleConsoleClient.class);
 
     public static void main(String[] args) {
         new SimpleSingleConsoleClient().start();
@@ -27,7 +30,7 @@ public class SimpleSingleConsoleClient {
                     shutdown();
                     break;
                 }
-                System.out.println("Received: " + message);
+                log.debug("Received: " + message);
             }
 
 
@@ -44,7 +47,7 @@ public class SimpleSingleConsoleClient {
 
     private void shutdown() throws IOException {
         if (clientConsoleThread.isAlive()) clientConsoleThread.interrupt();
-        System.out.println("Client stopped");
+        log.debug("Client stopped");
     }
 
     private void startClientConsoleThread() {

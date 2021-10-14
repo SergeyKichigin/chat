@@ -1,5 +1,7 @@
 package ru.geekbrains.chat.chat_server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.geekbrains.chat.chat_server.auth.AuthService;
 import ru.geekbrains.chat.chat_server.auth.InMemoryAuthService;
 
@@ -16,6 +18,7 @@ public class ChatServer {
     private static final int PORT = 8089;
     private AuthService authService;
     private Map<String, ChatClientHandler> handlers;
+    private static final Logger log = LogManager.getLogger(ChatServer.class);
 
     public ChatServer() {
         this.authService = new InMemoryAuthService();
@@ -24,11 +27,11 @@ public class ChatServer {
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Server start!");
+            log.debug("Server start!");
             while (true) {
-                System.out.println("Waiting for connection......");
+                log.debug("Waiting for connection......");
                 Socket socket = serverSocket.accept();
-                System.out.println("Client connected");
+                log.debug("Client connected");
                 new ChatClientHandler(socket, this).handle();
             }
         } catch (IOException e) {

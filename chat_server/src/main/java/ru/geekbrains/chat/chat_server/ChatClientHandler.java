@@ -1,5 +1,8 @@
 package ru.geekbrains.chat.chat_server;
 
+import jdk.nashorn.internal.lookup.MethodHandleFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.geekbrains.chat.chat_server.error.UserNotFoundException;
 import ru.geekbrains.chat.chat_server.error.WrongCredentialsException;
 
@@ -17,6 +20,7 @@ public class ChatClientHandler {
     private ChatServer server;
     private String currentUser;
     private int t = 120;
+    private static final Logger log = LogManager.getLogger(ChatClientHandler.class);
 
     public ChatClientHandler(Socket socket, ChatServer server) {
         try {
@@ -24,7 +28,7 @@ public class ChatClientHandler {
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
             socket.setSoTimeout(t * 1000);
-            System.out.println("Handler created");
+            log.debug("Handler created");
             this.server = server;
         } catch (IOException e) {
             e.printStackTrace();
